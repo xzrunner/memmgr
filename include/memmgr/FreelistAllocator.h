@@ -1,6 +1,8 @@
 #ifndef _MEMMGR_FREELIST_ALLOCATOR_H_
 #define _MEMMGR_FREELIST_ALLOCATOR_H_
 
+#include <stddef.h>
+
 namespace mm
 {
 

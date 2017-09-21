@@ -1,6 +1,8 @@
 #ifndef _MEMMGR_UTILITY_H_
 #define _MEMMGR_UTILITY_H_
 
+#include <stddef.h>
+
 namespace mm
 {
 
