@@ -26,6 +26,8 @@
 #ifndef ANDROID_LINEARALLOCATOR_H
 #define ANDROID_LINEARALLOCATOR_H
 
+#include "memmgr/FreelistAllocator.h"
+
 #include <stddef.h>
 #include <type_traits>
 
@@ -42,6 +44,7 @@ namespace mm {
 class LinearAllocator {
 public:
     LinearAllocator();
+	LinearAllocator(FreelistAllocator* alloc);
     ~LinearAllocator();
 
     /**
@@ -142,6 +145,8 @@ private:
     Page* mCurrentPage;
     Page* mPages;
     DestructorNode* mDtorList = nullptr;
+
+	FreelistAllocator* m_alloc = nullptr;
 
     // Memory usage tracking
     size_t mTotalAllocated;

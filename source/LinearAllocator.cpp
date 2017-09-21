@@ -30,6 +30,7 @@
 #include <logger.h>
 
 #include <stdlib.h>
+#include <assert.h>
 
 // The ideal size of a page allocation (these need to be multiples of 8)
 #define INITIAL_PAGE_SIZE ((size_t)512) // 512b
@@ -88,9 +89,10 @@ public:
     Page* next() { return mNextPage; }
     void setNext(Page* next) { mNextPage = next; }
 
-    Page()
-        : mNextPage(0)
-    {}
+	Page(int pageSize = -1)
+		: mPageSize(pageSize)
+		, mNextPage(0)
+	{}
 
     void* operator new(size_t /*size*/, void* buf) { return buf; }
 
@@ -101,9 +103,14 @@ public:
     void* end(int pageSize) {
         return (void*) (((size_t)start()) + pageSize);
     }
+	
+	int GetPageSize() const { return mPageSize; }
 
 private:
     Page(const Page& /*other*/) {}
+
+	int mPageSize;
+
     Page* mNextPage;
 };
 
@@ -118,6 +125,20 @@ LinearAllocator::LinearAllocator()
     , mPageCount(0)
     , mDedicatedPageCount(0) {}
 
+LinearAllocator::LinearAllocator(FreelistAllocator* alloc)
+	: mPageSize(INITIAL_PAGE_SIZE)
+	, mMaxAllocSize(INITIAL_PAGE_SIZE * MAX_WASTE_RATIO)
+	, mNext(0)
+	, mCurrentPage(0)
+	, mPages(0)
+	, mTotalAllocated(0)
+	, mWastedSpace(0)
+	, mPageCount(0)
+	, mDedicatedPageCount(0)
+	, m_alloc(alloc)
+{
+}
+
 LinearAllocator::~LinearAllocator(void) {
     while (mDtorList) {
         auto node = mDtorList;
@@ -128,7 +149,15 @@ LinearAllocator::~LinearAllocator(void) {
     while (p) {
         Page* next = p->next();
         p->~Page();
-        free(p);
+
+		int pageSize = p->GetPageSize();
+		if (pageSize < 0) {
+			free(p);
+		} else {
+			assert(m_alloc);
+			m_alloc->Free(p, pageSize);
+		}
+
         RM_ALLOCATION();
         p = next;
     }
@@ -236,8 +265,16 @@ LinearAllocator::Page* LinearAllocator::newPage(size_t pageSize) {
     ADD_ALLOCATION();
     mTotalAllocated += pageSize;
     mPageCount++;
-    void* buf = malloc(pageSize);
-    return new (buf) Page();
+	void* buf = nullptr;
+	if (m_alloc) {
+		buf = m_alloc->Allocate(pageSize);
+	}
+	if (buf) {
+		return new (buf) Page(pageSize);
+	} else {
+		buf = malloc(pageSize);
+		return new (buf) Page();
+	}
 }
 
 static const char* toSize(size_t value, float& result) {
