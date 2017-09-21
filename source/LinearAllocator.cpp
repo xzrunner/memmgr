@@ -26,6 +26,7 @@
 #define LOG_NDEBUG 1
 
 #include "memmgr/LinearAllocator.h"
+#include "memmgr/Utility.h"
 
 #include <logger.h>
 
@@ -277,25 +278,12 @@ LinearAllocator::Page* LinearAllocator::newPage(size_t pageSize) {
 	}
 }
 
-static const char* toSize(size_t value, float& result) {
-    if (value < 2000) {
-        result = value;
-        return "B";
-    }
-    if (value < 2000000) {
-        result = value / 1024.0f;
-        return "KB";
-    }
-    result = value / 1048576.0f;
-    return "MB";
-}
-
 void LinearAllocator::dumpMemoryStats(const char* prefix) {
     float prettySize;
     const char* prettySuffix;
-    prettySuffix = toSize(mTotalAllocated, prettySize);
+    prettySuffix = Utility::ToSize(mTotalAllocated, prettySize);
 	LOGI("%sTotal allocated: %.2f%s", prefix, prettySize, prettySuffix);
-    prettySuffix = toSize(mWastedSpace, prettySize);
+    prettySuffix = Utility::ToSize(mWastedSpace, prettySize);
 	LOGI("%sWasted space: %.2f%s (%.1f%%)", prefix, prettySize, prettySuffix,
           (float) mWastedSpace / (float) mTotalAllocated * 100.0f);
 	LOGI("%sPages %zu (dedicated %zu)", prefix, mPageCount, mDedicatedPageCount);

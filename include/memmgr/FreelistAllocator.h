@@ -7,13 +7,15 @@ namespace mm
 class FreelistAllocator
 {
 public:
-	FreelistAllocator(int min, int max);
+	FreelistAllocator(size_t min_page_sz, size_t max_page_sz);
 	FreelistAllocator(const FreelistAllocator&) = delete;
 	FreelistAllocator& operator = (const FreelistAllocator&) = delete;
 	~FreelistAllocator();
 	
 	void* Allocate(size_t size);
 	void  Free(void* p, size_t size);
+
+	void DumpMemoryStats(const char* prefix = "") const;
 
 private:
 	int QueryPageIdx(size_t size) const;
@@ -24,7 +26,12 @@ private:
 private:
 	Page* m_pages;
 
-	int m_min, m_max;
+	size_t m_min_page_sz, m_max_page_sz;
+
+	// Memory usage tracking
+	size_t m_tot_allocated;
+	size_t m_wasted_space;
+	size_t m_page_count;
 
 }; // FreelistAllocator
 
