@@ -153,10 +153,10 @@ int FreelistAllocator::QueryPageIdx(size_t size) const
 		rval <<= 1;
 	}
 
-	if (idx < m_min_page_sz) {
+	if (static_cast<size_t>(idx) < m_min_page_sz) {
 		idx = m_min_page_sz;
 	}
-	if (idx > m_max_page_sz) {
+	if (static_cast<size_t>(idx) > m_max_page_sz) {
 		return -1;
 	}
 

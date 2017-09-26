@@ -117,7 +117,7 @@ private:
 
 LinearAllocator::LinearAllocator()
     : mPageSize(INITIAL_PAGE_SIZE)
-    , mMaxAllocSize(INITIAL_PAGE_SIZE * MAX_WASTE_RATIO)
+    , mMaxAllocSize(static_cast<size_t>(INITIAL_PAGE_SIZE * MAX_WASTE_RATIO))
     , mNext(0)
     , mCurrentPage(0)
     , mPages(0)
@@ -128,7 +128,7 @@ LinearAllocator::LinearAllocator()
 
 LinearAllocator::LinearAllocator(FreelistAllocator* alloc)
 	: mPageSize(INITIAL_PAGE_SIZE)
-	, mMaxAllocSize(INITIAL_PAGE_SIZE * MAX_WASTE_RATIO)
+	, mMaxAllocSize(static_cast<size_t>(INITIAL_PAGE_SIZE * MAX_WASTE_RATIO))
 	, mNext(0)
 	, mCurrentPage(0)
 	, mPages(0)
@@ -209,7 +209,7 @@ void LinearAllocator::ensureNext(size_t size) {
 
     if (mCurrentPage && mPageSize < MAX_PAGE_SIZE) {
         mPageSize = min(MAX_PAGE_SIZE, mPageSize * 2);
-        mMaxAllocSize = mPageSize * MAX_WASTE_RATIO;
+        mMaxAllocSize = static_cast<size_t>(mPageSize * MAX_WASTE_RATIO);
         mPageSize = ALIGN(mPageSize);
     }
     mWastedSpace += mPageSize;
