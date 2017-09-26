@@ -140,6 +140,34 @@ LinearAllocator::LinearAllocator(FreelistAllocator* alloc)
 {
 }
 
+LinearAllocator& LinearAllocator::operator = (const LinearAllocator& alloc)
+{
+	if (this == &alloc) {
+		return *this;
+	}
+
+	this->~LinearAllocator();
+
+	mPageSize     = alloc.mPageSize;
+	mMaxAllocSize = alloc.mMaxAllocSize;
+	mNext         = alloc.mNext;
+	mCurrentPage  = alloc.mCurrentPage;
+	mPages        = alloc.mPages;
+	mDtorList     = alloc.mDtorList;
+
+	m_alloc = alloc.m_alloc;
+
+	mTotalAllocated     = alloc.mTotalAllocated;
+	mWastedSpace        = alloc.mWastedSpace;
+	mPageCount          = alloc.mPageCount;
+	mDedicatedPageCount = alloc.mDedicatedPageCount;
+
+	const_cast<LinearAllocator&>(alloc).mDtorList = nullptr;
+	const_cast<LinearAllocator&>(alloc).mPages = nullptr;
+
+	return *this;
+}
+
 LinearAllocator::~LinearAllocator(void) {
     while (mDtorList) {
         auto node = mDtorList;

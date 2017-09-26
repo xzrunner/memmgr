@@ -45,6 +45,7 @@ class LinearAllocator {
 public:
     LinearAllocator();
 	LinearAllocator(FreelistAllocator* alloc);
+	LinearAllocator& operator = (const LinearAllocator&);
     ~LinearAllocator();
 
     /**
