@@ -66,20 +66,12 @@ struct Allocator
     pointer allocate(size_type n, const void* hint = 0)
     {
         //return static_cast<T*>(::operator new(n * sizeof(T)));
-		if (n != 1) {
-			int zz = n * sizeof(T);
-			int z = 0;
-		}
 		return static_cast<T*>(BlockAllocatorPool::Instance()->Allocate(n * sizeof(T)));
     }
 
     void deallocate(T* ptr, size_type n)
     {
 		//::operator delete(ptr);
-		if (n != 1) {
-			int zz = n * sizeof(T);
-			int z = 0;
-		}
 		BlockAllocatorPool::Instance()->Free(ptr, n * sizeof(T));
     }
 

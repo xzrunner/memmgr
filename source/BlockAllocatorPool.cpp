@@ -4,6 +4,14 @@
 //extern "C" void  free(void* p);
 #include <stdlib.h>
 
+#include <thread>
+
+#define CHECK_MT
+
+#ifdef CHECK_MT
+#include <assert.h>
+#endif // CHECK_MT
+
 #ifndef ALIGN
 #define ALIGN(x, a)         (((x) + ((a) - 1)) & ~((a) - 1))
 #endif
@@ -38,6 +46,10 @@ size_t*        BlockAllocatorPool::m_pBlockSizeLookup;
 BlockAllocator*     BlockAllocatorPool::m_pAllocators;
 
 CU_SINGLETON_DEFINITION(BlockAllocatorPool);
+
+#ifdef CHECK_MT
+static std::thread::id THIS_ID = std::this_thread::get_id();
+#endif // CHECK_MT
 
 BlockAllocatorPool::BlockAllocatorPool()
 {
@@ -88,10 +100,12 @@ BlockAllocator* BlockAllocatorPool::LookUpAllocator(size_t size)
         return nullptr;
 }
 
-#include <stdio.h>
-
 void* BlockAllocatorPool::Allocate(size_t size)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == THIS_ID);
+#endif // CHECK_MT
+
 	void* ret = nullptr;
     BlockAllocator* pAlloc = LookUpAllocator(size);
 	if (pAlloc) {
@@ -105,6 +119,10 @@ void* BlockAllocatorPool::Allocate(size_t size)
 
 void* BlockAllocatorPool::Allocate(size_t size, size_t alignment)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == THIS_ID);
+#endif // CHECK_MT
+
     uint8_t* p;
     size += alignment;
     BlockAllocator* pAlloc = LookUpAllocator(size);
@@ -120,6 +138,10 @@ void* BlockAllocatorPool::Allocate(size_t size, size_t alignment)
 
 void BlockAllocatorPool::Free(void* p, size_t size)
 {
+#ifdef CHECK_MT
+	assert(std::this_thread::get_id() == THIS_ID);
+#endif // CHECK_MT
+
     BlockAllocator* pAlloc = LookUpAllocator(size);
     if (pAlloc)
         pAlloc->Free(p);
