@@ -6,7 +6,11 @@
 #include <memory>
 
 #include <vector>
+#include <list>
+#include <set>
+#include <map>
 #include <string>
+#include <unordered_map>
 
 namespace mm
 {
@@ -142,6 +146,26 @@ template <typename T>
 class AllocVector : public std::vector<T, Allocator<T>>
 {
 }; // AllocVector
+
+template <typename T>
+class AllocList : public std::list<T, Allocator<T>>
+{
+}; // AllocList
+
+template <typename T>
+class AllocSet : public std::set<T, std::less<T>, Allocator<T>>
+{
+}; // AllocSet
+
+template <typename K, typename V>
+class AllocMap : public std::map<K, V, std::less<K>, Allocator<std::pair<const K, V>>>
+{
+}; // AllocMap
+
+template <typename K, typename V>
+class AllocUnorderedMap : public std::unordered_map<K, V, std::hash<K>, std::equal_to<K>, Allocator<std::pair<const K, V>>>
+{
+}; // AllocUnorderedMap
 
 using AllocString = std::basic_string<char, std::char_traits<char>, Allocator<char>>;
 
