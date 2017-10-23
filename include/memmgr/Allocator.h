@@ -4,8 +4,10 @@
 #include "memmgr/BlockAllocatorPool.h"
 
 #include <memory>
+#include <limits>
 
 #include <vector>
+#include <deque>
 #include <list>
 #include <set>
 #include <map>
@@ -79,6 +81,14 @@ struct Allocator
 		BlockAllocatorPool::Instance()->Free(ptr, n * sizeof(T));
     }
 
+	// void construct(pointer p, const T& val)    { new (p) T(val); }
+	// void destroy(pointer p)                    { p->~T(); }
+
+	size_type max_size() const
+	{
+		return std::numeric_limits<size_type>::max() / sizeof(T);
+	}
+
 }; // Allocator
 
 template <typename T, typename U>
@@ -146,6 +156,11 @@ template <typename T>
 class AllocVector : public std::vector<T, Allocator<T>>
 {
 }; // AllocVector
+
+template <typename T>
+class AllocDeque : public std::deque<T, Allocator<T>>
+{
+}; // AllocDeque
 
 template <typename T>
 class AllocList : public std::list<T, Allocator<T>>
