@@ -6,7 +6,10 @@
 
 #include <thread>
 
+#if defined(__MINGW32__) && !defined(_GLIBCXX_HAS_GTHREADS)
+#else
 #define CHECK_MT
+#endif // __MINGW32__
 
 #ifdef CHECK_MT
 #include <assert.h>
