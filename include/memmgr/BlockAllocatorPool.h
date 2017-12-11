@@ -5,8 +5,6 @@
 
 #include "memmgr/BlockAllocator.h"
 
-#include <cu/cu_macro.h>
-
 #include <new>
 
 namespace mm 
@@ -36,13 +34,20 @@ public:
     void* Allocate(size_t size);
     void* Allocate(size_t size, size_t alignment);
     void  Free(void* p, size_t size);
-private:
-    static size_t*        m_pBlockSizeLookup;
-    static BlockAllocator*     m_pAllocators;
-private:
-    static BlockAllocator* LookUpAllocator(size_t size);
 
-	CU_SINGLETON_DECLARATION(BlockAllocatorPool);
+	static BlockAllocatorPool* Instance();
+
+private:
+	BlockAllocatorPool();
+	~BlockAllocatorPool();
+
+	static BlockAllocator* LookUpAllocator(size_t size);
+
+private:
+	thread_local static size_t*         m_pBlockSizeLookup;
+	thread_local static BlockAllocator* m_pAllocators;
+
+	thread_local static BlockAllocatorPool* m_instance;
 
 }; // BlockAllocatorPool
 

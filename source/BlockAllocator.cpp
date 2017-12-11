@@ -62,7 +62,8 @@ static int TOT_FREE_SZ = 0;
 
 void* BlockAllocator::Allocate()
 {
-    if (!m_pFreeList) {
+    if (!m_pFreeList) 
+	{
 		assert(m_nFreeBlocks == 0);
 
 #ifdef DUMP_INFO
@@ -72,12 +73,12 @@ void* BlockAllocator::Allocate()
         // allocate a new page
         PageHeader* pNewPage = reinterpret_cast<PageHeader*>(new uint8_t[m_szPageSize]);
         ++m_nPages;
-        m_nBlocks += m_nBlocksPerPage;
+        m_nBlocks     += m_nBlocksPerPage;
         m_nFreeBlocks += m_nBlocksPerPage;
 
 #ifdef DUMP_INFO
 		TOT_FREE_COUNT += m_nBlocksPerPage;
-		TOT_FREE_SZ += m_szBlockSize * m_nBlocksPerPage;
+		TOT_FREE_SZ    += m_szBlockSize * m_nBlocksPerPage;
 #endif // DUMP_INFO
 
 #if defined(_DEBUG)

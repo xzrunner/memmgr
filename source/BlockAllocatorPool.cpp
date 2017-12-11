@@ -45,13 +45,12 @@ static const uint32_t kNumBlockSizes =
 static const uint32_t kMaxBlockSize = 
     kBlockSizes[kNumBlockSizes - 1];
 
-size_t*        BlockAllocatorPool::m_pBlockSizeLookup;
-BlockAllocator*     BlockAllocatorPool::m_pAllocators;
-
-CU_SINGLETON_DEFINITION(BlockAllocatorPool);
+thread_local size_t*             BlockAllocatorPool::m_pBlockSizeLookup;
+thread_local BlockAllocator*     BlockAllocatorPool::m_pAllocators;
+thread_local BlockAllocatorPool* BlockAllocatorPool::m_instance;
 
 #ifdef CHECK_MT
-static std::thread::id THIS_ID = std::this_thread::get_id();
+thread_local static std::thread::id THIS_ID;
 #endif // CHECK_MT
 
 BlockAllocatorPool::BlockAllocatorPool()
@@ -62,8 +61,9 @@ BlockAllocatorPool::BlockAllocatorPool()
 int BlockAllocatorPool::Initialize()
 {
     // one-time initialization
-    static bool s_bInitialized = false;
-    if (!s_bInitialized) {
+    thread_local static bool s_bInitialized = false;
+    if (!s_bInitialized) 
+	{
         // initialize block size lookup table
         m_pBlockSizeLookup = new size_t[kMaxBlockSize + 1];
         size_t j = 0;
@@ -77,6 +77,8 @@ int BlockAllocatorPool::Initialize()
         for (size_t i = 0; i < kNumBlockSizes; i++) {
             m_pAllocators[i].Reset(kBlockSizes[i], kPageSize, kAlignment);
         }
+
+		THIS_ID = std::this_thread::get_id();
 
         s_bInitialized = true;
     }
@@ -150,6 +152,14 @@ void BlockAllocatorPool::Free(void* p, size_t size)
         pAlloc->Free(p);
     else
         free(p);
+}
+
+BlockAllocatorPool* BlockAllocatorPool::Instance()
+{
+	if (!m_instance) {
+		m_instance = new BlockAllocatorPool();
+	}
+	return m_instance;
 }
 
 }
