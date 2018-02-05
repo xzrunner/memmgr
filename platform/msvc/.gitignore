@@ -1,0 +1,5 @@
+memmgr/
+projects/*
+
+!projects/memmgr.vcxproj
+!projects/memmgr.vcxproj.filters
