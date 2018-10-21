@@ -7,7 +7,7 @@
 
 #include <new>
 
-namespace mm 
+namespace mm
 {
 
 class BlockAllocatorPool

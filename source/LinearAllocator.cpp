@@ -104,7 +104,7 @@ public:
     void* end(int pageSize) {
         return (void*) (((size_t)start()) + pageSize);
     }
-	
+
 	int GetPageSize() const { return mPageSize; }
 
 private:

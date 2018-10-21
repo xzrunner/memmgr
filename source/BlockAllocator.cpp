@@ -16,9 +16,9 @@ namespace mm
 {
 
 BlockAllocator::BlockAllocator()
-        : m_pPageList(nullptr), m_pFreeList(nullptr), 
-        m_szDataSize(0), m_szPageSize(0), 
-        m_szAlignmentSize(0), m_szBlockSize(0), m_nBlocksPerPage(0) 
+        : m_pPageList(nullptr), m_pFreeList(nullptr),
+        m_szDataSize(0), m_szPageSize(0),
+        m_szAlignmentSize(0), m_szBlockSize(0), m_nBlocksPerPage(0)
 {
 }
 
@@ -62,7 +62,7 @@ static int TOT_FREE_SZ = 0;
 
 void* BlockAllocator::Allocate()
 {
-    if (!m_pFreeList) 
+    if (!m_pFreeList)
 	{
 		assert(m_nFreeBlocks == 0);
 
@@ -159,7 +159,7 @@ void BlockAllocator::FillFreePage(PageHeader *pPage)
 {
     // page header
     pPage->pNext = nullptr;
- 
+
     // blocks
     BlockHeader *pBlock = pPage->Blocks();
     for (uint32_t i = 0; i < m_nBlocksPerPage; i++)
@@ -168,27 +168,27 @@ void BlockAllocator::FillFreePage(PageHeader *pPage)
         pBlock = NextBlock(pBlock);
     }
 }
- 
+
 void BlockAllocator::FillFreeBlock(BlockHeader *pBlock)
 {
     // block header + data
     memset(pBlock, PATTERN_FREE, m_szBlockSize - m_szAlignmentSize);
- 
+
     // alignment
-    memset(reinterpret_cast<uint8_t*>(pBlock) + m_szBlockSize - m_szAlignmentSize, 
+    memset(reinterpret_cast<uint8_t*>(pBlock) + m_szBlockSize - m_szAlignmentSize,
                 PATTERN_ALIGN, m_szAlignmentSize);
 }
- 
+
 void BlockAllocator::FillAllocatedBlock(BlockHeader *pBlock)
 {
     // block header + data
     memset(pBlock, PATTERN_ALLOC, m_szBlockSize - m_szAlignmentSize);
- 
+
     // alignment
-    memset(reinterpret_cast<uint8_t*>(pBlock) + m_szBlockSize - m_szAlignmentSize, 
+    memset(reinterpret_cast<uint8_t*>(pBlock) + m_szBlockSize - m_szAlignmentSize,
                 PATTERN_ALIGN, m_szAlignmentSize);
 }
- 
+
 #endif
 
 BlockHeader* BlockAllocator::NextBlock(BlockHeader *pBlock)

@@ -6,7 +6,7 @@
 #include <cstdint>
 
 #include <assert.h>
-#include <math.h> 
+#include <math.h>
 
 #include <stdio.h>
 
@@ -22,7 +22,7 @@ public:
 	Page()
 		: m_block_sz(0)
 		, m_header(nullptr)
-		, m_freelist(nullptr) 
+		, m_freelist(nullptr)
 	{}
 	Page(const Page&) = delete;
 	Page& operator = (const Page&) = delete;
@@ -89,7 +89,7 @@ private:
 		m_header = nullptr;
 		m_freelist = nullptr;
 	}
-	
+
 private:
 	struct Block
 	{
@@ -114,7 +114,7 @@ FreelistAllocator::FreelistAllocator(size_t min_page_sz, size_t max_page_sz)
 {
 	assert(min_page_sz <= max_page_sz);
 	m_pages = new Page[max_page_sz - min_page_sz + 1];
-	
+
 	size_t block_sz = static_cast<size_t>(pow(2, min_page_sz));
 	for (int i = 0, n = max_page_sz - min_page_sz + 1; i < n; ++i, block_sz *= 2) {
 		m_pages[i].Reset(block_sz + Page::HEADER_SIZE);

@@ -9,13 +9,13 @@
 namespace mm
 {
 
-struct BlockHeader 
+struct BlockHeader
 {
     // union-ed with data
     BlockHeader* pNext;
 };
 
-struct PageHeader 
+struct PageHeader
 {
     PageHeader* pNext;
     BlockHeader* Blocks() {
@@ -23,7 +23,7 @@ struct PageHeader
     }
 };
 
-class BlockAllocator 
+class BlockAllocator
 {
 public:
     // debug patterns

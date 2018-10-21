@@ -13,7 +13,7 @@ public:
 	FreelistAllocator(const FreelistAllocator&) = delete;
 	FreelistAllocator& operator = (const FreelistAllocator&) = delete;
 	~FreelistAllocator();
-	
+
 	void* Allocate(size_t size);
 	void  Free(void* p, size_t size);
 
